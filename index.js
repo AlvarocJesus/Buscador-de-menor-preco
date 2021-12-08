@@ -48,22 +48,25 @@ const gabinete = ["", "", ""];
 async function buscarProcessador() {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-  // await page.goto(processador[0]);
+  // await page.goto(processador[2]);
 
   for (let item of processador) {
     await page.goto(item);
 
-    const imgList = await page.evaluate(() => {
-      return {
-        price:
-          document.querySelector("article section div h4").innerText || // kabum
-          document.querySelector(
-            "div div div div div div div div div div div p span"
-          ).innerText || // terabyte
-          document.querySelector("div div div div div div div div.jss64").innerText || // pichau
-          document.querySelector("span.a-offscreen").innerText, // amazon
-      };
-    });
+    const imgList = await page
+      .evaluate((item) => {
+        return {
+          site: item,
+          price:
+            document.querySelector("article section div h4").innerText || // kabum
+            document.querySelector("p span#valParc.valParc").innerText || // terabyte
+            document.querySelector("div div div div div div div div.jss64")
+              .innerText || // pichau
+            document.querySelector("span.a-offscreen").innerText, // amazon
+        };
+      })
+      .then((result) => console.log({ result }))
+      .catch((err) => console.log({ err }));
     console.log({ imgList });
   }
 
@@ -74,7 +77,7 @@ async function buscarProcessador() {
     console.log("well done!");
   }); */
 
-  // await browser.close();
+  await browser.close();
 }
 
 buscarProcessador();
