@@ -48,26 +48,25 @@ const gabinete = ["", "", ""];
 async function buscarProcessador() {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-  // await page.goto(processador[2]);
 
-  for (let item of processador) {
-    await page.goto(item);
+  for (let item = 0; item <= processador.length; item++) {
+    await page.goto(processador[item]);
 
     const imgList = await page
-      .evaluate((item) => {
+      .evaluate(() => {
         return {
-          site: item,
           price:
-            document.querySelector("article section div h4").innerText || // kabum
-            document.querySelector("p span#valParc.valParc").innerText || // terabyte
-            document.querySelector("div div div div div div div div.jss64")
-              .innerText || // pichau
-            document.querySelector("span.a-offscreen").innerText, // amazon
+            document.querySelector("article section div h4").innerText ||
+            document.querySelector("div div div div div div p span")
+              .innerText ||
+            document.querySelector(
+              "div main div div div div div div div div div.jss69"
+            ).innerText ||
+            document.querySelector("span.a-offscreen").innerText,
         };
       })
-      .then((result) => console.log({ result }))
       .catch((err) => console.log({ err }));
-    console.log({ imgList });
+    console.log({ item, imgList });
   }
 
   // escrever os dados em um arquivo local(json)
@@ -82,22 +81,20 @@ async function buscarProcessador() {
 
 buscarProcessador();
 
-/* 
-    async function buscaProcessador() {
-    const browser = await puppeteer.launch({ headless: false });
-    const page = await browser.newPage();
+/* async function buscaProcessador() {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
 
-    await page.goto(processador[0]);
+  await page.goto(processador[3]);
 
-    const imgList = await page.evaluate(() => {
-      return document.querySelector("article section div h4").innerText;
-      // console.log({ nodeList });
-      // return nodeList;
-    });
-    console.log({ imgList });
+  const imgList = await page.evaluate(() => {
+    return {
+      price: document.querySelector("span.a-offscreen").innerText,
+    };
+  });
+  console.log({ imgList });
 
-    await browser.close();
-    }
+  await browser.close();
+}
 
-    buscaProcessador();
-  */
+buscaProcessador(); */
