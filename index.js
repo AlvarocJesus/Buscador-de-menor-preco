@@ -51,10 +51,12 @@ async function buscarProcessador() {
 
   for (let item = 0; item <= processador.length; item++) {
     await page.goto(processador[item]);
+    const title = await page.title()
 
     const imgList = await page
       .evaluate(() => {
         return {
+          // name: title,
           price:
             document.querySelector("article section div h4").innerText ||
             document.querySelector("div div div div div div p span")
@@ -70,11 +72,11 @@ async function buscarProcessador() {
   }
 
   // escrever os dados em um arquivo local(json)
-  /* fs.writeFile("processador.json", JSON.stringify(List, null, 2), (err) => {
-    if (err) throw new Error(err);
+  // fs.writeFile("processador.json", JSON.stringify(List, null, 2), (err) => {
+  //   if (err) throw new Error(err);
 
-    console.log("well done!");
-  }); */
+  //   console.log("well done!");
+  // });
 
   await browser.close();
 }
@@ -87,12 +89,15 @@ buscarProcessador();
 
   await page.goto(processador[3]);
 
-  const imgList = await page.evaluate(() => {
-    return {
-      price: document.querySelector("span.a-offscreen").innerText,
-    };
-  });
-  console.log({ imgList });
+  // const imgList = await page.evaluate(() => {
+  //   return {
+  //     price: document.querySelector("span.a-offscreen").innerText,
+  //   };
+  // });
+  // console.log({ imgList });
+
+  const title = await page.title()
+  console.log({ title });
 
   await browser.close();
 }
