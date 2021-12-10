@@ -3,10 +3,26 @@ const puppeteer = require("puppeteer");
 const fs = require("fs");
 
 const processador = [
-  "https://www.kabum.com.br/produto/102438/processador-amd-ryzen-5-3600-cache-32mb-3-6ghz-4-2ghz-max-turbo-am4-sem-video-100-100000031box",
-  "https://www.terabyteshop.com.br/produto/11313/processador-amd-ryzen-5-3600-36ghz-42ghz-turbo-6-core-12-thread-cooler-wraith-stealth-am4",
-  "https://www.pichau.com.br/processador-amd-ryzen-5-3600-6-core-12-threads-3-6ghz-4-2ghz-turbo-cache-35mb-am4-100-100000031box",
-  "https://www.amazon.com.br/Processador-AMD-Ryzen-3600-100-100000031BOX/dp/B07STGGQ18",
+  {
+    title:
+      "https://www.kabum.com.br/produto/102438/processador-amd-ryzen-5-3600-cache-32mb-3-6ghz-4-2ghz-max-turbo-am4-sem-video-100-100000031box",
+    selector: "article section div h4",
+  },
+  {
+    title:
+      "https://www.terabyteshop.com.br/produto/11313/processador-amd-ryzen-5-3600-36ghz-42ghz-turbo-6-core-12-thread-cooler-wraith-stealth-am4",
+    selector: "div div div div div div p span",
+  },
+  {
+    title:
+      "https://www.pichau.com.br/processador-amd-ryzen-5-3600-6-core-12-threads-3-6ghz-4-2ghz-turbo-cache-35mb-am4-100-100000031box",
+    selector: "div main div div div div div div div div div.jss69",
+  },
+  {
+    title:
+      "https://www.amazon.com.br/Processador-AMD-Ryzen-3600-100-100000031BOX/dp/B07STGGQ18",
+    selector: "span.a-offscreen",
+  },
 ];
 const placaMae = [
   "https://www.kabum.com.br/produto/98880/placa-mae-asus-tuf-b450m-plus-gaming-amd-am4-matx-ddr4",
@@ -49,26 +65,25 @@ async function buscarProcessador() {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
-  for (let item = 0; item <= processador.length; item++) {
-    await page.goto(processador[item]);
-    const title = await page.title()
+  for await (let item of processador) {
+    await page.goto(item.title);
+    // const title = await page.title();
 
     const imgList = await page
-      .evaluate(() => {
-        return {
-          // name: title,
-          price:
-            document.querySelector("article section div h4").innerText ||
-            document.querySelector("div div div div div div p span")
-              .innerText ||
-            document.querySelector(
-              "div main div div div div div div div div div.jss69"
-            ).innerText ||
-            document.querySelector("span.a-offscreen").innerText,
+      .evaluate((item) => {
+        const price = document.querySelector(item.selector).innerText;
+
+        console.log({ price });
+
+        const resultado = {
+          // name: item.title,
+          price,
         };
+
+        return resultado;
       })
       .catch((err) => console.log({ err }));
-    console.log({ item, imgList });
+    console.log({ imgList });
   }
 
   // escrever os dados em um arquivo local(json)
