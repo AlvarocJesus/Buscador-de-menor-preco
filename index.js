@@ -62,38 +62,91 @@ const fonte = [
 const gabinete = ["", "", ""];
 
 async function buscarProcessador() {
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
+  if (!fs.existsSync("./compras/processador.json")) {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
 
-  for await (let item of processador) {
-    await page.goto(item.title);
-    // const title = await page.title();
+    let resultado = [];
 
-    const imgList = await page
-      .evaluate((item) => {
-        const price = document.querySelector(item.selector).innerText;
+    for (let item of processador) {
+      await page.goto(item.title);
 
-        console.log({ price });
+      const result = await page
+        .evaluate((item) => {
+          console.log({ item });
+          const price = document.querySelector(item.selector).innerText;
 
-        const resultado = {
-          // name: item.title,
-          price,
-        };
+          console.log({ price });
 
-        return resultado;
-      })
-      .catch((err) => console.log({ err }));
-    console.log({ imgList });
+          const obj = {
+            name: item.title,
+            price,
+            data: new Date().toLocaleDateString(),
+          };
+
+          return obj;
+        }, item)
+        .catch((err) => console.log({ err }));
+      resultado.push(result);
+      // return result;
+      // console.log({ result });
+    }
+    console.log({ resultado });
+
+    fs.writeFile(
+      "processador.json",
+      JSON.stringify(resultado, null, 2),
+      (err) => {
+        if (err) throw new Error(err);
+
+        console.log("well done!");
+      }
+    );
+
+    await browser.close();
+  } else {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
+
+    let resultado = [];
+
+    for (let item of processador) {
+      await page.goto(item.title);
+
+      const result = await page
+        .evaluate((item) => {
+          console.log({ item });
+          const price = document.querySelector(item.selector).innerText;
+
+          console.log({ price });
+
+          const obj = {
+            name: item.title,
+            price,
+            data: new Date().toLocaleDateString(),
+          };
+
+          return obj;
+        }, item)
+        .catch((err) => console.log({ err }));
+      resultado.push(result);
+      // return result;
+      // console.log({ result });
+    }
+    console.log({ resultado });
+
+    fs.writeFile(
+      "processador.json",
+      JSON.stringify(resultado, null, 2),
+      (err) => {
+        if (err) throw new Error(err);
+
+        console.log("well done!");
+      }
+    );
+
+    await browser.close();
   }
-
-  // escrever os dados em um arquivo local(json)
-  // fs.writeFile("processador.json", JSON.stringify(List, null, 2), (err) => {
-  //   if (err) throw new Error(err);
-
-  //   console.log("well done!");
-  // });
-
-  await browser.close();
 }
 
 buscarProcessador();
